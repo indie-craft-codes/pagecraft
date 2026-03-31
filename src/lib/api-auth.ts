@@ -28,13 +28,13 @@ export async function validateApiKey(
   const hash = hashApiKey(key);
   const supabase = getSupabaseAdmin();
 
-  const { data: apiKey } = await supabase
+  const { data: apiKey, error: keyError } = await supabase
     .from("api_keys")
     .select("user_id")
     .eq("key_hash", hash)
     .single();
 
-  if (!apiKey) return null;
+  if (keyError || !apiKey) return null;
 
   // Update last used
   await supabase
@@ -43,13 +43,13 @@ export async function validateApiKey(
     .eq("key_hash", hash);
 
   // Get user plan
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("plan")
     .eq("id", apiKey.user_id)
     .single();
 
-  if (!profile || profile.plan !== "team") return null;
+  if (profileError || !profile || profile.plan !== "team") return null;
 
   return { userId: apiKey.user_id, plan: profile.plan };
 }

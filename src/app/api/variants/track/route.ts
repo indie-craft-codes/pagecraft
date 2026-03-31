@@ -18,11 +18,23 @@ export async function POST(request: Request) {
   const supabase = getSupabase();
 
   if (type === "view") {
-    await supabase.rpc("increment_variant_views", { variant_id: variantId });
-  } else if (type === "conversion") {
-    await supabase.rpc("increment_variant_conversions", {
+    const { error } = await supabase.rpc("increment_variant_views", {
       variant_id: variantId,
     });
+    if (error) {
+      console.error("Failed to track view:", error);
+      return NextResponse.json({ error: "Failed to track" }, { status: 500 });
+    }
+  } else if (type === "conversion") {
+    const { error } = await supabase.rpc("increment_variant_conversions", {
+      variant_id: variantId,
+    });
+    if (error) {
+      console.error("Failed to track conversion:", error);
+      return NextResponse.json({ error: "Failed to track" }, { status: 500 });
+    }
+  } else {
+    return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   }
 
   return NextResponse.json({ ok: true });

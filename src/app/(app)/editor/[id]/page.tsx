@@ -93,7 +93,6 @@ export default function EditorPage({
         name: project.name,
         meta_title: project.meta_title,
         meta_description: project.meta_description,
-        updated_at: new Date().toISOString(),
       })
       .eq("id", project.id);
 

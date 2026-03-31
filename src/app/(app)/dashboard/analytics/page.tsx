@@ -196,7 +196,7 @@ export default function AnalyticsPage() {
           </h2>
           <div className="flex items-end gap-1 h-40">
             {data.dailyViews.map((day) => {
-              const maxViews = Math.max(...data.dailyViews.map((d) => d.count));
+              const maxViews = Math.max(...data.dailyViews.map((d) => d.count), 1);
               const height = maxViews > 0 ? (day.count / maxViews) * 100 : 0;
               return (
                 <div

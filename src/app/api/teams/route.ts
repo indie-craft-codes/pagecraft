@@ -52,15 +52,25 @@ export async function POST(request: Request) {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error("Team creation error:", error);
+    return NextResponse.json({ error: "Failed to create team" }, { status: 500 });
+  }
 
   // Add owner as admin member
-  await supabase.from("team_members").insert({
+  const { error: memberError } = await supabase.from("team_members").insert({
     team_id: team.id,
     user_id: user.id,
     role: "admin",
     accepted: true,
   });
+
+  if (memberError) {
+    console.error("Team member creation error:", memberError);
+    // Clean up: delete the team if we can't add the owner
+    await supabase.from("teams").delete().eq("id", team.id);
+    return NextResponse.json({ error: "Failed to set up team" }, { status: 500 });
+  }
 
   return NextResponse.json(team);
 }

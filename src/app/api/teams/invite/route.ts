@@ -61,7 +61,8 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
-    throw error;
+    console.error("Team invite error:", error);
+    return NextResponse.json({ error: "Failed to invite user" }, { status: 500 });
   }
 
   return NextResponse.json({ invited: true, email });

@@ -35,6 +35,15 @@ export async function POST(request: Request) {
     );
   }
 
+  // Validate domain format
+  const domainRegex = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+  if (!domainRegex.test(domain)) {
+    return NextResponse.json(
+      { error: "Invalid domain format" },
+      { status: 400 }
+    );
+  }
+
   // Verify CNAME points to our domain
   const appDomain = new URL(
     process.env.NEXT_PUBLIC_APP_URL || "https://pagecraft.ai"
