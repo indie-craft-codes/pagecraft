@@ -58,13 +58,29 @@ export async function POST(request: Request) {
 
   // Fire webhook if configured
   if (project.webhook_url) {
-    fetch(project.webhook_url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, data, source, projectId }),
-    }).catch((err) => {
-      console.error("Webhook delivery failed:", err);
-    });
+    try {
+      const webhookUrl = new URL(project.webhook_url);
+      // Only allow http/https — block private IPs to prevent SSRF
+      if (!["http:", "https:"].includes(webhookUrl.protocol)) {
+        console.error("Webhook URL must use http/https");
+      } else if (
+        /^(127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.)/.test(webhookUrl.hostname) ||
+        ["localhost", "0.0.0.0", "[::1]"].includes(webhookUrl.hostname)
+      ) {
+        console.error("Webhook URL cannot point to private network");
+      } else {
+        fetch(webhookUrl.toString(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, data, source, projectId }),
+          signal: AbortSignal.timeout(10000),
+        }).catch((err) => {
+          console.error("Webhook delivery failed:", err);
+        });
+      }
+    } catch {
+      console.error("Invalid webhook URL:", project.webhook_url);
+    }
   }
 
   return NextResponse.json({ success: true });

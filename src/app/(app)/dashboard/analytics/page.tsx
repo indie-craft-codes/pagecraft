@@ -25,6 +25,7 @@ export default function AnalyticsPage() {
 
   async function loadAnalytics() {
     setLoading(true);
+    setData(null);
     const supabase = createClient();
 
     const daysAgo = period === "7d" ? 7 : period === "30d" ? 30 : 90;

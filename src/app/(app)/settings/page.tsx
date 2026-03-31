@@ -58,8 +58,11 @@ export default function SettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan }),
       });
+      if (!res.ok) throw new Error("Checkout failed");
       const { url } = await res.json();
       if (url) window.location.href = url;
+    } catch {
+      alert("Failed to start upgrade. Please try again.");
     } finally {
       setBillingLoading(false);
     }
@@ -69,8 +72,11 @@ export default function SettingsPage() {
     setBillingLoading(true);
     try {
       const res = await fetch("/api/billing/portal", { method: "POST" });
+      if (!res.ok) throw new Error("Portal failed");
       const { url } = await res.json();
       if (url) window.location.href = url;
+    } catch {
+      alert("Failed to open billing portal. Please try again.");
     } finally {
       setBillingLoading(false);
     }

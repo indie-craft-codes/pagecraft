@@ -107,13 +107,24 @@ export default function DashboardPage() {
     if (!confirm("Delete this project? This cannot be undone.")) return;
 
     const supabase = createClient();
-    await supabase.from("projects").delete().eq("id", id);
+    const { error } = await supabase.from("projects").delete().eq("id", id);
+    if (error) {
+      alert("Failed to delete project. Please try again.");
+      return;
+    }
     setProjects(projects.filter((p) => p.id !== id));
   }
 
   async function handlePublish(id: string, published: boolean) {
     const supabase = createClient();
-    await supabase.from("projects").update({ published }).eq("id", id);
+    const { error } = await supabase
+      .from("projects")
+      .update({ published })
+      .eq("id", id);
+    if (error) {
+      alert("Failed to update project. Please try again.");
+      return;
+    }
     setProjects(
       projects.map((p) => (p.id === id ? { ...p, published } : p))
     );

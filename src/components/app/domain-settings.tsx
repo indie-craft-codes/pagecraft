@@ -23,9 +23,9 @@ export function DomainSettings({
   >(currentDomain ? "verified" : "idle");
   const [message, setMessage] = useState("");
 
-  const appDomain = typeof window !== "undefined"
-    ? new URL(process.env.NEXT_PUBLIC_APP_URL || "https://pagecraft.ai").hostname
-    : "pagecraft.ai";
+  const appDomain = new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://pagecraft.ai"
+  ).hostname;
 
   async function handleVerify() {
     if (!domain.trim()) return;

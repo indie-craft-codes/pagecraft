@@ -50,22 +50,28 @@ export default function BrandKitPage() {
 
   async function handleSave() {
     setSaving(true);
-    await fetch("/api/brand-kit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: kit.name,
-        logoUrl: kit.logo_url,
-        primaryColor: kit.primary_color,
-        secondaryColor: kit.secondary_color,
-        accentColor: kit.accent_color,
-        fontHeading: kit.font_heading,
-        fontBody: kit.font_body,
-        tone: kit.tone,
-        tagline: kit.tagline,
-      }),
-    });
-    setSaving(false);
+    try {
+      const res = await fetch("/api/brand-kit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: kit.name,
+          logoUrl: kit.logo_url,
+          primaryColor: kit.primary_color,
+          secondaryColor: kit.secondary_color,
+          accentColor: kit.accent_color,
+          fontHeading: kit.font_heading,
+          fontBody: kit.font_body,
+          tone: kit.tone,
+          tagline: kit.tagline,
+        }),
+      });
+      if (!res.ok) throw new Error("Save failed");
+    } catch {
+      alert("Failed to save brand kit. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   if (loading) {
