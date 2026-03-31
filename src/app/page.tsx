@@ -458,9 +458,9 @@ function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition">
+                <Link href="/templates" className="hover:text-white transition">
                   Templates
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition">
@@ -513,9 +513,56 @@ function Footer() {
   );
 }
 
+function JsonLd() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "PageCraft",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    description:
+      "AI-powered landing page generator. Create stunning, conversion-optimized landing pages in seconds.",
+    offers: [
+      {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+        name: "Free",
+      },
+      {
+        "@type": "Offer",
+        price: "19",
+        priceCurrency: "USD",
+        name: "Pro",
+        billingIncrement: "P1M",
+      },
+      {
+        "@type": "Offer",
+        price: "49",
+        priceCurrency: "USD",
+        name: "Team",
+        billingIncrement: "P1M",
+      },
+    ],
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.9",
+      reviewCount: "128",
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+    />
+  );
+}
+
 export default function Home() {
   return (
     <>
+      <JsonLd />
       <Header />
       <main>
         <Hero />

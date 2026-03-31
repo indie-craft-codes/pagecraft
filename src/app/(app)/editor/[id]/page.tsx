@@ -1,10 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef, use } from "react";
+import { useState, useEffect, useRef, use, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  SectionEditor,
+  parseSections,
+  type Section,
+} from "@/components/app/section-editor";
 import type { Project } from "@/types/database";
 import {
   ArrowLeft,
@@ -17,6 +22,7 @@ import {
   Loader2,
   Code,
   Eye,
+  Layers,
 } from "lucide-react";
 
 export default function EditorPage({
@@ -29,14 +35,29 @@ export default function EditorPage({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [viewMode, setViewMode] = useState<"preview" | "code">("preview");
+  const [showSections, setShowSections] = useState(true);
   const [deviceWidth, setDeviceWidth] = useState("100%");
   const [htmlContent, setHtmlContent] = useState("");
+  const [sections, setSections] = useState<Section[]>([]);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
 
   useEffect(() => {
     loadProject();
   }, [id]);
+
+  // Parse sections when HTML changes (but not from section editor itself)
+  const parsedSections = useMemo(
+    () => parseSections(htmlContent),
+    [htmlContent]
+  );
+
+  // Sync parsed sections only when HTML is loaded or changed externally
+  useEffect(() => {
+    if (parsedSections.length > 0 && sections.length === 0) {
+      setSections(parsedSections);
+    }
+  }, [parsedSections]);
 
   async function loadProject() {
     const supabase = createClient();
@@ -53,6 +74,7 @@ export default function EditorPage({
 
     setProject(data);
     setHtmlContent(data.html_content);
+    setSections(parseSections(data.html_content));
     setLoading(false);
   }
 
@@ -98,6 +120,18 @@ export default function EditorPage({
     URL.revokeObjectURL(url);
   }
 
+  // Keyboard shortcut: Cmd+S to save
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        handleSave();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [htmlContent, project]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -141,26 +175,36 @@ export default function EditorPage({
         </div>
 
         {viewMode === "preview" && (
-          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+          <>
+            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setDeviceWidth("100%")}
+                className={`p-1.5 rounded-md transition cursor-pointer ${deviceWidth === "100%" ? "bg-white shadow-sm" : "text-gray-500"}`}
+              >
+                <Monitor className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setDeviceWidth("768px")}
+                className={`p-1.5 rounded-md transition cursor-pointer ${deviceWidth === "768px" ? "bg-white shadow-sm" : "text-gray-500"}`}
+              >
+                <Tablet className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setDeviceWidth("375px")}
+                className={`p-1.5 rounded-md transition cursor-pointer ${deviceWidth === "375px" ? "bg-white shadow-sm" : "text-gray-500"}`}
+              >
+                <Smartphone className="w-4 h-4" />
+              </button>
+            </div>
+
             <button
-              onClick={() => setDeviceWidth("100%")}
-              className={`p-1.5 rounded-md transition cursor-pointer ${deviceWidth === "100%" ? "bg-white shadow-sm" : "text-gray-500"}`}
+              onClick={() => setShowSections(!showSections)}
+              className={`p-1.5 rounded-md transition cursor-pointer ${showSections ? "bg-indigo-100 text-indigo-600" : "bg-gray-100 text-gray-500"}`}
+              title="Toggle section editor"
             >
-              <Monitor className="w-4 h-4" />
+              <Layers className="w-4 h-4" />
             </button>
-            <button
-              onClick={() => setDeviceWidth("768px")}
-              className={`p-1.5 rounded-md transition cursor-pointer ${deviceWidth === "768px" ? "bg-white shadow-sm" : "text-gray-500"}`}
-            >
-              <Tablet className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setDeviceWidth("375px")}
-              className={`p-1.5 rounded-md transition cursor-pointer ${deviceWidth === "375px" ? "bg-white shadow-sm" : "text-gray-500"}`}
-            >
-              <Smartphone className="w-4 h-4" />
-            </button>
-          </div>
+          </>
         )}
 
         <Button variant="secondary" size="sm" onClick={handleExport}>
@@ -184,32 +228,55 @@ export default function EditorPage({
       </div>
 
       {/* Editor Area */}
-      <div className="flex-1 bg-gray-100 overflow-hidden">
-        {viewMode === "preview" ? (
-          <div className="h-full flex items-start justify-center p-4 overflow-auto">
-            <div
-              style={{ width: deviceWidth, maxWidth: "100%" }}
-              className="h-full bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300"
-            >
-              <iframe
-                ref={iframeRef}
-                srcDoc={htmlContent}
-                className="w-full h-full border-0"
-                sandbox="allow-scripts"
-                title="Page Preview"
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="h-full p-4">
-            <textarea
-              value={htmlContent}
-              onChange={(e) => setHtmlContent(e.target.value)}
-              className="w-full h-full bg-gray-900 text-gray-100 font-mono text-sm p-4 rounded-lg border-0 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              spellCheck={false}
+      <div className="flex-1 bg-gray-100 overflow-hidden flex">
+        {/* Section Panel */}
+        {viewMode === "preview" && showSections && (
+          <div className="w-72 bg-gray-50 border-r border-gray-200 flex-shrink-0">
+            <SectionEditor
+              sections={sections}
+              fullHtml={htmlContent}
+              onSectionsChange={(newSections) => {
+                setSections(newSections);
+              }}
+              onHtmlChange={(newHtml) => {
+                setHtmlContent(newHtml);
+                setSections(parseSections(newHtml));
+              }}
             />
           </div>
         )}
+
+        {/* Main Content */}
+        <div className="flex-1 overflow-hidden">
+          {viewMode === "preview" ? (
+            <div className="h-full flex items-start justify-center p-4 overflow-auto">
+              <div
+                style={{ width: deviceWidth, maxWidth: "100%" }}
+                className="h-full bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300"
+              >
+                <iframe
+                  ref={iframeRef}
+                  srcDoc={htmlContent}
+                  className="w-full h-full border-0"
+                  sandbox="allow-scripts"
+                  title="Page Preview"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="h-full p-4">
+              <textarea
+                value={htmlContent}
+                onChange={(e) => {
+                  setHtmlContent(e.target.value);
+                  setSections(parseSections(e.target.value));
+                }}
+                className="w-full h-full bg-gray-900 text-gray-100 font-mono text-sm p-4 rounded-lg border-0 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                spellCheck={false}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

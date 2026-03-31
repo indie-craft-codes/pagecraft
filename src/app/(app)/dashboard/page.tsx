@@ -17,18 +17,43 @@ import {
   Sparkles,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { TEMPLATES } from "@/lib/templates";
 
 export default function DashboardPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [createStep, setCreateStep] = useState<"choose" | "form">("choose");
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
     productName: "",
     productDescription: "",
     targetAudience: "",
-    tone: "professional" as const,
+    tone: "professional" as "professional" | "casual" | "bold" | "minimal",
   });
+
+  function selectTemplate(templateId: string) {
+    const tpl = TEMPLATES.find((t) => t.id === templateId);
+    if (tpl) {
+      setForm({
+        productName: "",
+        productDescription: tpl.description,
+        targetAudience: "",
+        tone: tpl.tone,
+      });
+      setCreateStep("form");
+    }
+  }
+
+  function openCreateBlank() {
+    setForm({
+      productName: "",
+      productDescription: "",
+      targetAudience: "",
+      tone: "professional",
+    });
+    setCreateStep("form");
+  }
 
   useEffect(() => {
     loadProjects();
@@ -98,7 +123,7 @@ export default function DashboardPage() {
             Create and manage your landing pages
           </p>
         </div>
-        <Button onClick={() => setShowCreate(true)}>
+        <Button onClick={() => { setShowCreate(true); setCreateStep("choose"); }}>
           <Plus className="w-4 h-4 mr-2" />
           New Page
         </Button>
@@ -107,6 +132,58 @@ export default function DashboardPage() {
       {/* Create Modal */}
       {showCreate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          {createStep === "choose" ? (
+            <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl max-h-[80vh] overflow-auto">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-5 h-5 text-indigo-600" />
+                <h2 className="text-lg font-semibold">Create a New Page</h2>
+              </div>
+              <p className="text-sm text-gray-500 mb-6">
+                Start from a template or describe your own product from scratch.
+              </p>
+
+              {/* Blank option */}
+              <button
+                onClick={openCreateBlank}
+                className="w-full text-left p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-indigo-400 hover:bg-indigo-50/50 transition mb-4 cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Plus className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Start from scratch</p>
+                    <p className="text-sm text-gray-500">Describe your product and let AI build your page</p>
+                  </div>
+                </div>
+              </button>
+
+              {/* Templates */}
+              <p className="text-sm font-medium text-gray-700 mb-3">Or choose a template:</p>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {TEMPLATES.slice(0, 8).map((tpl) => (
+                  <button
+                    key={tpl.id}
+                    onClick={() => selectTemplate(tpl.id)}
+                    className="text-left p-3 border border-gray-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50/30 transition cursor-pointer"
+                  >
+                    <div className={`h-2 w-12 rounded-full bg-gradient-to-r ${tpl.color} mb-2`} />
+                    <p className="font-medium text-gray-900 text-sm">{tpl.name}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{tpl.previewDescription}</p>
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={() => setShowCreate(false)}
+                  className="text-sm text-gray-500 hover:text-gray-700 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl">
             <div className="flex items-center gap-2 mb-6">
               <Sparkles className="w-5 h-5 text-indigo-600" />
@@ -197,6 +274,7 @@ export default function DashboardPage() {
               </div>
             </form>
           </div>
+          )}
         </div>
       )}
 
