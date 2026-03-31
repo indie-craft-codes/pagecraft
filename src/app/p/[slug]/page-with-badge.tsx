@@ -22,6 +22,7 @@ export function PageWithBadge({
         srcDoc={htmlContent}
         className="w-full h-full border-0"
         sandbox="allow-scripts"
+        referrerPolicy="no-referrer"
         title="Published Page"
       />
 

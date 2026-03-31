@@ -1,6 +1,20 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+async function verifyProjectOwnership(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  projectId: string,
+  userId: string
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", projectId)
+    .eq("user_id", userId)
+    .single();
+  return !!data;
+}
+
 // List pages for a project
 export async function GET(request: Request) {
   const supabase = await createClient();
@@ -20,6 +34,10 @@ export async function GET(request: Request) {
       { error: "projectId required" },
       { status: 400 }
     );
+  }
+
+  if (!(await verifyProjectOwnership(supabase, projectId, user.id))) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   const { data } = await supabase
@@ -57,6 +75,10 @@ export async function POST(request: Request) {
 
   const { projectId, title, slug } = await request.json();
 
+  if (!(await verifyProjectOwnership(supabase, projectId, user.id))) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   const { data, error } = await supabase
     .from("pages")
     .insert({
@@ -75,7 +97,7 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
-    throw error;
+    return NextResponse.json({ error: "Failed to create page" }, { status: 500 });
   }
 
   return NextResponse.json(data);
@@ -94,6 +116,17 @@ export async function PUT(request: Request) {
 
   const { id, title, slug, html_content, sort_order } = await request.json();
 
+  // Verify ownership via page -> project -> user
+  const { data: page } = await supabase
+    .from("pages")
+    .select("project_id")
+    .eq("id", id)
+    .single();
+
+  if (!page || !(await verifyProjectOwnership(supabase, page.project_id, user.id))) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   const { data, error } = await supabase
     .from("pages")
     .update({
@@ -106,7 +139,9 @@ export async function PUT(request: Request) {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    return NextResponse.json({ error: "Failed to update page" }, { status: 500 });
+  }
 
   return NextResponse.json(data);
 }
@@ -123,6 +158,17 @@ export async function DELETE(request: Request) {
   }
 
   const { id } = await request.json();
+
+  // Verify ownership
+  const { data: page } = await supabase
+    .from("pages")
+    .select("project_id")
+    .eq("id", id)
+    .single();
+
+  if (!page || !(await verifyProjectOwnership(supabase, page.project_id, user.id))) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
 
   await supabase.from("pages").delete().eq("id", id);
 

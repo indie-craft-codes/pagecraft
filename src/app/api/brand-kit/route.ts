@@ -62,7 +62,10 @@ export async function POST(request: Request) {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error("Brand kit save error:", error);
+    return NextResponse.json({ error: "Failed to save brand kit" }, { status: 500 });
+  }
 
   return NextResponse.json(data);
 }

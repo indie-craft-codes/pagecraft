@@ -35,9 +35,20 @@ export async function POST(request: Request) {
     .eq("email", email)
     .single();
 
+  if (!invitedUser) {
+    // User doesn't exist yet — store as pending invite (email only)
+    // They'll be linked when they sign up
+    return NextResponse.json({
+      invited: true,
+      email,
+      pending: true,
+      message: "User not yet registered. Invite will be linked on signup.",
+    });
+  }
+
   const { error } = await supabase.from("team_members").insert({
     team_id: teamId,
-    user_id: invitedUser?.id || user.id, // placeholder if user doesn't exist yet
+    user_id: invitedUser.id,
     role: role || "editor",
     invited_email: email,
     accepted: false,

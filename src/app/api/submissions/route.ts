@@ -29,6 +29,18 @@ export async function POST(request: Request) {
 
   const supabase = getSupabase();
 
+  // Verify project exists and is published (prevents spam to arbitrary IDs)
+  const { data: project } = await supabase
+    .from("projects")
+    .select("id, webhook_url")
+    .eq("id", projectId)
+    .eq("published", true)
+    .single();
+
+  if (!project) {
+    return NextResponse.json({ error: "Project not found" }, { status: 404 });
+  }
+
   const { error } = await supabase.from("submissions").insert({
     project_id: projectId,
     email,
@@ -44,19 +56,15 @@ export async function POST(request: Request) {
     );
   }
 
-  // If project has a webhook URL, fire it
-  const { data: project } = await supabase
-    .from("projects")
-    .select("webhook_url")
-    .eq("id", projectId)
-    .single();
-
-  if (project?.webhook_url) {
+  // Fire webhook if configured
+  if (project.webhook_url) {
     fetch(project.webhook_url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, data, source, projectId }),
-    }).catch(() => {}); // Fire and forget
+    }).catch((err) => {
+      console.error("Webhook delivery failed:", err);
+    });
   }
 
   return NextResponse.json({ success: true });

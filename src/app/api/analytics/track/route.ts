@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
   const supabase = getSupabase();
 
-  await supabase.from("page_events").insert({
+  const { error } = await supabase.from("page_events").insert({
     project_id: projectId,
     event_type: eventType,
     visitor_id: visitorId,
@@ -34,6 +34,11 @@ export async function POST(request: Request) {
     device,
     referrer: referrer || null,
   });
+
+  if (error) {
+    console.error("Analytics track error:", error);
+    return NextResponse.json({ error: "Failed to track event" }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }

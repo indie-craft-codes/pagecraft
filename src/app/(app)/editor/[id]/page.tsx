@@ -124,16 +124,19 @@ export default function EditorPage({
   }
 
   // Keyboard shortcut: Cmd+S to save
+  const handleSaveRef = useRef(handleSave);
+  handleSaveRef.current = handleSave;
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
-        handleSave();
+        handleSaveRef.current();
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [htmlContent, project]);
+  }, []);
 
   if (loading) {
     return (
