@@ -10,6 +10,7 @@ import {
   parseSections,
   type Section,
 } from "@/components/app/section-editor";
+import { ChatEditor } from "@/components/app/chat-editor";
 import type { Project } from "@/types/database";
 import {
   ArrowLeft,
@@ -23,6 +24,7 @@ import {
   Code,
   Eye,
   Layers,
+  MessageSquare,
 } from "lucide-react";
 
 export default function EditorPage({
@@ -36,6 +38,7 @@ export default function EditorPage({
   const [saving, setSaving] = useState(false);
   const [viewMode, setViewMode] = useState<"preview" | "code">("preview");
   const [showSections, setShowSections] = useState(true);
+  const [showChat, setShowChat] = useState(false);
   const [deviceWidth, setDeviceWidth] = useState("100%");
   const [htmlContent, setHtmlContent] = useState("");
   const [sections, setSections] = useState<Section[]>([]);
@@ -204,6 +207,13 @@ export default function EditorPage({
             >
               <Layers className="w-4 h-4" />
             </button>
+            <button
+              onClick={() => setShowChat(!showChat)}
+              className={`p-1.5 rounded-md transition cursor-pointer ${showChat ? "bg-indigo-100 text-indigo-600" : "bg-gray-100 text-gray-500"}`}
+              title="AI Chat Editor"
+            >
+              <MessageSquare className="w-4 h-4" />
+            </button>
           </>
         )}
 
@@ -277,6 +287,19 @@ export default function EditorPage({
             </div>
           )}
         </div>
+
+        {/* AI Chat Panel */}
+        {viewMode === "preview" && showChat && (
+          <div className="w-80 bg-white border-l border-gray-200 flex-shrink-0">
+            <ChatEditor
+              currentHtml={htmlContent}
+              onHtmlChange={(newHtml) => {
+                setHtmlContent(newHtml);
+                setSections(parseSections(newHtml));
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
