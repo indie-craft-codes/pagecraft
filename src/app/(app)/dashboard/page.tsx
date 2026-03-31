@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { TEMPLATES } from "@/lib/templates";
+import { SUPPORTED_LANGUAGES } from "@/lib/languages";
 
 export default function DashboardPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -30,6 +31,7 @@ export default function DashboardPage() {
     productDescription: "",
     targetAudience: "",
     tone: "professional" as "professional" | "casual" | "bold" | "minimal",
+    language: "en",
   });
 
   function selectTemplate(templateId: string) {
@@ -40,6 +42,7 @@ export default function DashboardPage() {
         productDescription: tpl.description,
         targetAudience: "",
         tone: tpl.tone,
+        language: "en",
       });
       setCreateStep("form");
     }
@@ -51,6 +54,7 @@ export default function DashboardPage() {
       productDescription: "",
       targetAudience: "",
       tone: "professional",
+      language: "en",
     });
     setCreateStep("form");
   }
@@ -90,6 +94,7 @@ export default function DashboardPage() {
         productDescription: "",
         targetAudience: "",
         tone: "professional",
+        language: "en",
       });
     } catch {
       alert("Failed to generate page. Please try again.");
@@ -247,6 +252,24 @@ export default function DashboardPage() {
                   <option value="casual">Casual</option>
                   <option value="bold">Bold</option>
                   <option value="minimal">Minimal</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Language
+                </label>
+                <select
+                  value={form.language}
+                  onChange={(e) =>
+                    setForm({ ...form, language: e.target.value })
+                  }
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm"
+                >
+                  {Object.entries(SUPPORTED_LANGUAGES).map(([code, lang]) => (
+                    <option key={code} value={code}>
+                      {lang.flag} {lang.name} ({lang.nativeName})
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="flex gap-3 pt-2">

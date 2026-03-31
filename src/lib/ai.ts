@@ -10,6 +10,7 @@ export interface GeneratePageInput {
   targetAudience?: string;
   tone?: "professional" | "casual" | "bold" | "minimal";
   colorScheme?: string;
+  language?: string; // e.g., "en", "ko", "ja"
 }
 
 export async function generateLandingPage(input: GeneratePageInput): Promise<{
@@ -30,6 +31,7 @@ Product Description: ${input.productDescription}
 ${input.targetAudience ? `Target Audience: ${input.targetAudience}` : ""}
 Tone: ${input.tone || "professional"}
 ${input.colorScheme ? `Color Scheme: ${input.colorScheme}` : "Use a modern, appealing color scheme"}
+${input.language && input.language !== "en" ? `Language: Write ALL text content in ${input.language}. The HTML lang attribute should be "${input.language}".` : ""}
 
 Requirements:
 1. Return ONLY valid HTML with inline Tailwind CSS classes (using CDN)

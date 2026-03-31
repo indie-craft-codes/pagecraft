@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Sparkles, LayoutDashboard, Settings, LogOut } from "lucide-react";
+import { Sparkles, LayoutDashboard, Settings, LogOut, Mail, Users } from "lucide-react";
 
 async function SignOutButton() {
   async function signOut() {
@@ -53,6 +53,20 @@ export default async function AppLayout({
           >
             <LayoutDashboard className="w-4 h-4" />
             Dashboard
+          </Link>
+          <Link
+            href="/dashboard/submissions"
+            className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition"
+          >
+            <Mail className="w-4 h-4" />
+            Submissions
+          </Link>
+          <Link
+            href="/dashboard/referrals"
+            className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition"
+          >
+            <Users className="w-4 h-4" />
+            Referrals
           </Link>
           <Link
             href="/settings"

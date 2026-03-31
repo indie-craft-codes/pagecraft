@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { productName, productDescription, targetAudience, tone } = body;
+  const { productName, productDescription, targetAudience, tone, language } = body;
 
   if (!productName || !productDescription) {
     return NextResponse.json(
@@ -43,6 +43,7 @@ export async function POST(request: Request) {
       productDescription,
       targetAudience,
       tone,
+      language,
     });
 
     const slug = generateSlug(productName);

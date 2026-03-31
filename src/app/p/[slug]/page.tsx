@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { PageWithBadge } from "./page-with-badge";
 
 function getSupabase() {
   return createClient(
@@ -34,19 +35,27 @@ export default async function PublicPage({ params }: Props) {
   const { slug } = await params;
   const { data: project } = await getSupabase()
     .from("projects")
-    .select("html_content, published")
+    .select("html_content, published, user_id")
     .eq("slug", slug)
     .eq("published", true)
     .single();
 
   if (!project) notFound();
 
+  // Check user plan to decide badge visibility
+  const { data: profile } = await getSupabase()
+    .from("profiles")
+    .select("plan")
+    .eq("id", project.user_id)
+    .single();
+
+  const showBadge = !profile || profile.plan === "free";
+
   return (
-    <iframe
-      srcDoc={project.html_content}
-      className="w-full h-screen border-0"
-      sandbox="allow-scripts"
-      title="Published Page"
+    <PageWithBadge
+      htmlContent={project.html_content}
+      showBadge={showBadge}
+      slug={slug}
     />
   );
 }
