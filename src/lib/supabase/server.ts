@@ -2,6 +2,12 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export async function createClient() {
+  // Use local SQLite DB for development
+  if (process.env.USE_LOCAL_DB === "true") {
+    const { createLocalClient } = await import("@/lib/local-db/client");
+    return createLocalClient() as ReturnType<typeof createServerClient>;
+  }
+
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -19,7 +25,6 @@ export async function createClient() {
             );
           } catch {
             // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing sessions.
           }
         },
       },

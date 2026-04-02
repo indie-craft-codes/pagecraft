@@ -57,7 +57,7 @@ export default function AnalyticsPage() {
       return;
     }
 
-    const projectIds = projects.map((p) => p.id);
+    const projectIds = projects.map((p: { id: string }) => p.id);
 
     const { data: events } = await supabase
       .from("page_events")
@@ -65,7 +65,14 @@ export default function AnalyticsPage() {
       .in("project_id", projectIds)
       .gte("created_at", since.toISOString());
 
-    const allEvents = events || [];
+    interface PageEvent {
+      event_type: string;
+      device: string;
+      country: string;
+      created_at: string;
+    }
+
+    const allEvents = (events || []) as PageEvent[];
 
     const totalViews = allEvents.filter((e) => e.event_type === "view").length;
     const totalClicks = allEvents.filter(
