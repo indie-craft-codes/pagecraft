@@ -1,10 +1,5 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import Anthropic from "@anthropic-ai/sdk";
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -39,39 +34,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 8000,
-      messages: [
-        {
-          role: "user",
-          content: `You are an expert at A/B testing and conversion rate optimization.
+    // Dynamic import to use the adapter
+    const { default: generateVariant } = await import("@/lib/ai-variant");
+    const variantHtml = await generateVariant(originalHtml, variantInstruction);
 
-Here is the original landing page:
-\`\`\`html
-${originalHtml}
-\`\`\`
-
-${variantInstruction ? `Specific changes requested: "${variantInstruction}"` : "Create a meaningfully different variant that tests a different conversion hypothesis."}
-
-Create a VARIANT of this page that:
-1. Tests a different approach to converting visitors (different headline angle, different CTA, different layout, different social proof approach)
-2. Maintains the same product information and branding
-3. Is a complete, valid HTML document
-4. Uses Tailwind CSS via CDN
-5. Is meaningfully different, not just cosmetic changes
-
-Return ONLY the complete HTML. No explanations.`,
-        },
-      ],
-    });
-
-    const content = message.content[0];
-    if (content.type !== "text") throw new Error("Unexpected response");
-
-    const variantHtml = content.text.trim();
-
-    // Get existing variant count for naming
     const { count } = await supabase
       .from("variants")
       .select("*", { count: "exact", head: true })

@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import Anthropic from "@anthropic-ai/sdk";
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
+import { chatEditPage } from "@/lib/ai";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -26,19 +22,14 @@ export async function POST(request: Request) {
   }
 
   // Build conversation messages
-  const messages: Anthropic.MessageParam[] = [];
+  const messages: { role: string; content: string }[] = [];
 
-  // Add chat history
   if (chatHistory && Array.isArray(chatHistory)) {
     for (const msg of chatHistory.slice(-6)) {
-      messages.push({
-        role: msg.role,
-        content: msg.content,
-      });
+      messages.push({ role: msg.role, content: msg.content });
     }
   }
 
-  // Add current request
   messages.push({
     role: "user",
     content: `Here is the current landing page HTML:
@@ -54,19 +45,12 @@ If the request is unclear, make your best interpretation and apply it. Always ma
   });
 
   try {
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 8000,
-      system:
-        "You are an AI assistant that modifies landing page HTML based on natural language instructions. Always return complete, valid HTML documents with Tailwind CSS. Never include explanations or markdown — only raw HTML.",
-      messages,
-    });
+    const systemPrompt =
+      "You are an AI assistant that modifies landing page HTML based on natural language instructions. Always return complete, valid HTML documents with Tailwind CSS. Never include explanations or markdown — only raw HTML.";
 
-    const content = response.content[0];
-    if (content.type !== "text") throw new Error("Unexpected response");
+    let html = await chatEditPage(systemPrompt, messages);
 
-    // Clean up the response (remove any markdown wrappers)
-    let html = content.text.trim();
+    // Clean up markdown wrappers
     if (html.startsWith("```")) {
       html = html.replace(/^```(?:html)?\n?/, "").replace(/\n?```$/, "");
     }
