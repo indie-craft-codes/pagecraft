@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
       const project = await res.json();
       setProjects([project, ...projects]);
-      setShowCreate(false);
+      { setShowCreate(false); setCreateStep("choose"); };
       setForm({
         productName: "",
         productDescription: "",
@@ -192,7 +192,7 @@ export default function DashboardPage() {
 
               <div className="mt-4 flex justify-end">
                 <button
-                  onClick={() => setShowCreate(false)}
+                  onClick={() => { setShowCreate(false); setCreateStep("choose"); }}
                   className="text-sm text-gray-500 hover:text-gray-700 transition cursor-pointer"
                 >
                   Cancel
@@ -287,7 +287,7 @@ export default function DashboardPage() {
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={() => setShowCreate(false)}
+                  onClick={() => { setShowCreate(false); setCreateStep("choose"); }}
                   className="flex-1"
                 >
                   Cancel
