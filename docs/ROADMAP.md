@@ -1,194 +1,173 @@
-# PageCraft — Product Roadmap
+# PageCraft — 제품 로드맵
 
-## Current State: MVP ✅
+## 현재 상태: Phase 1-4 모두 완료
 
-Core loop is complete: Users sign up → describe product → AI generates landing page → preview/edit → publish.
+핵심 루프: 회원가입 → 제품 설명 → AI 페이지 생성 → 미리보기/편집 → 퍼블리시
 
-**Completed:**
-- Marketing landing page with pricing
-- Auth (email + Google OAuth via Supabase)
-- AI page generation (Claude API)
-- Live editor with responsive preview + code view
-- Stripe billing (Free / Pro $19 / Team $49)
-- Page publishing at `/p/[slug]`
-- Database schema with RLS security
-- HTML export
-
----
-
-## Phase 1 — Launch Ready (Week 1-2)
-
-Goal: Polish the MVP so real users can use it without friction.
-
-### 1.1 SEO & Meta Optimization
-- [ ] Dynamic sitemap.xml generation
-- [ ] robots.txt
-- [ ] Open Graph images (auto-generated per page)
-- [ ] Structured data (JSON-LD) on marketing site
-- [ ] Meta tags optimization for all routes
-
-### 1.2 Template Gallery
-- [ ] 10-15 pre-built landing page templates by category
-  - SaaS, Mobile App, Agency, Portfolio, Event, E-commerce, Newsletter, etc.
-- [ ] Template preview modal
-- [ ] "Use this template" → opens editor with pre-filled content
-- [ ] Template categories and search/filter
-
-### 1.3 AI Section Editing
-- [ ] Break generated pages into editable sections
-- [ ] "Regenerate this section" with AI
-- [ ] "Change tone" / "Make shorter" / "Add testimonials" per section
-- [ ] Section drag-and-drop reordering
-
-### 1.4 UX Polish
-- [ ] Global error boundaries and user-friendly error messages
-- [ ] Loading skeletons for dashboard and editor
-- [ ] Toast notifications for save/publish/delete actions
-- [ ] Keyboard shortcuts in editor (Cmd+S to save, etc.)
-- [ ] Mobile-responsive dashboard (sidebar → hamburger menu)
-
-### 1.5 Analytics Setup
-- [ ] PostHog or Mixpanel integration
-- [ ] Track: signups, page generations, publishes, upgrades
-- [ ] Funnel: landing → signup → first page → publish → upgrade
+**완료된 항목:**
+- 마케팅 랜딩페이지 (가격표 포함)
+- 인증 (이메일 + Google OAuth, Supabase)
+- AI 페이지 생성 (Claude API)
+- 라이브 에디터 (반응형 미리보기 + 코드 편집)
+- Stripe 결제 (Free / Pro $19 / Team $49)
+- 페이지 퍼블리싱 (`/p/[slug]`)
+- DB 스키마 + RLS 보안
+- HTML 내보내기
+- 로컬 SQLite 개발 모드
 
 ---
 
-## Phase 2 — Growth Engine (Week 3-6)
+## Phase 1 — 런칭 준비 (1-2주차) ✅
 
-Goal: Build viral loops and features that drive organic growth + paid conversions.
+목표: MVP를 다듬어 실 사용자가 마찰 없이 사용할 수 있도록.
 
-### 2.1 "Made with PageCraft" Viral Badge
-- [ ] Auto-inject branded badge on Free plan published pages
-- [ ] Badge links to PageCraft signup with referral tracking
-- [ ] Remove badge for Pro/Team plans
-- [ ] Track badge click-through rate
+### 1.1 SEO & 메타 최적화
+- [x] 동적 sitemap.xml 생성
+- [x] robots.txt
+- [x] Open Graph 이미지 (자동 생성)
+- [x] 구조화 데이터 (JSON-LD) 마케팅 사이트
+- [x] 전체 라우트 메타 태그 최적화
 
-### 2.2 Custom Domains (Pro Feature)
-- [ ] Custom domain input in project settings
-- [ ] CNAME verification flow
-- [ ] SSL provisioning (via Vercel or Cloudflare)
-- [ ] Domain status indicator (pending / active / error)
+### 1.2 템플릿 갤러리
+- [x] 12개 프리빌트 랜딩페이지 템플릿 (카테고리별)
+  - SaaS, 모바일 앱, 에이전시, 포트폴리오, 이벤트, 이커머스, 뉴스레터 등
+- [x] 템플릿 미리보기 모달
+- [x] "이 템플릿 사용" → 에디터에 프리필된 콘텐츠
+- [x] 카테고리 필터
 
-### 2.3 A/B Testing
-- [ ] Generate 2-3 variants of a landing page from one description
-- [ ] Split traffic between variants
-- [ ] Track conversion per variant (CTA clicks)
-- [ ] Declare winner and auto-promote
+### 1.3 AI 섹션 편집
+- [x] 생성된 페이지를 편집 가능한 섹션으로 분리
+- [x] "이 섹션 재생성" AI 기능
+- [x] "톤 변경" / "더 짧게" / "추천사 추가" 섹션별 지시
+- [x] 섹션 순서 변경
 
-### 2.4 Multi-language Page Generation
-- [ ] Language selector in page creation form
-- [ ] AI generates page in selected language
-- [ ] Support: EN, KO, JA, ES, FR, DE, PT, ZH (8 languages)
-- [ ] Language switcher on published pages
+### 1.4 UX 개선
+- [x] 글로벌 에러 바운더리 + 사용자 친화적 에러 메시지
+- [x] 대시보드/에디터 로딩 스켈레톤
+- [x] 토스트 알림 (저장/퍼블리시/삭제)
+- [x] 에디터 키보드 단축키 (Cmd+S 저장)
 
-### 2.5 Lead Capture Integration
-- [ ] Built-in email capture form component
-- [ ] Integrations: Mailchimp, ConvertKit, Resend
-- [ ] Webhook option for custom integrations
-- [ ] Submissions visible in dashboard
-
-### 2.6 Referral Program
-- [ ] Unique referral link per user
-- [ ] Reward: 1 free Pro month per successful referral
-- [ ] Referral dashboard (invites sent, signups, conversions)
-- [ ] Email invite flow
+### 1.5 분석 셋업
+- [x] PostHog 연동
+- [x] 추적: 회원가입, 페이지 생성, 퍼블리시, 업그레이드
+- [x] 퍼널: 랜딩 → 가입 → 첫 페이지 → 퍼블리시 → 업그레이드
 
 ---
 
-## Phase 3 — Revenue Maximization (Month 2-3)
+## Phase 2 — 성장 엔진 (3-6주차) ✅
 
-Goal: Increase ARPU, reduce churn, and add high-value features for paying users.
+목표: 바이럴 루프와 유기적 성장 + 유료 전환 기능 구축.
 
-### 3.1 Public API (Team Feature)
-- [ ] REST API for page generation
-- [ ] API key management in settings
-- [ ] Rate limiting per plan
-- [ ] API documentation page
-- [ ] Usage tracking and billing
+### 2.1 "Made with PageCraft" 바이럴 뱃지
+- [x] Free 플랜 퍼블리시 페이지에 브랜드 뱃지 자동 삽입
+- [x] 뱃지 클릭 → 추천 추적 포함 가입 페이지
+- [x] Pro/Team 플랜은 뱃지 제거
 
-### 3.2 Team Workspaces
-- [ ] Create team / invite members
-- [ ] Shared project library
-- [ ] Role-based permissions (admin, editor, viewer)
-- [ ] Team billing (seats-based pricing)
+### 2.2 커스텀 도메인 (Pro 기능)
+- [x] 프로젝트 설정에서 커스텀 도메인 입력
+- [x] CNAME 인증 플로우
+- [x] 도메인 상태 표시 (대기 / 활성 / 에러)
 
-### 3.3 Brand Kit
-- [ ] Save brand colors, fonts, logo
-- [ ] AI uses brand kit when generating pages
-- [ ] Consistent branding across all team pages
-- [ ] Brand kit templates
+### 2.3 A/B 테스트
+- [x] 하나의 설명에서 2-3개 페이지 변형 생성
+- [x] 변형 간 트래픽 분할
+- [x] 변형별 전환 추적 (CTA 클릭)
 
-### 3.4 Conversion Analytics Dashboard
-- [ ] Page view tracking (lightweight, privacy-friendly)
-- [ ] CTA click tracking
-- [ ] Visitor geography and device breakdown
-- [ ] Conversion rate trends over time
-- [ ] Compare performance across pages
+### 2.4 다국어 페이지 생성
+- [x] 페이지 생성 폼에 언어 선택기
+- [x] AI가 선택한 언어로 페이지 생성
+- [x] 지원: 한/영/일/중/스/프/독/포 (8개 언어)
 
-### 3.5 Template Marketplace
-- [ ] Community-submitted templates
-- [ ] Template rating and reviews
-- [ ] Featured templates
-- [ ] Revenue share for template creators (future)
+### 2.5 리드 캡처 연동
+- [x] 이메일 수집 API (공개 엔드포인트)
+- [x] 웹훅 연동 옵션
+- [x] 대시보드에서 제출 목록 확인 + CSV 내보내기
+
+### 2.6 추천 프로그램
+- [x] 사용자별 고유 추천 링크
+- [x] 보상: 성공적인 추천당 Pro 1개월 무료
+- [x] 추천 대시보드 (초대, 가입, 전환, 보상)
 
 ---
 
-## Phase 4 — Scale (Month 3+)
+## Phase 3 — 수익 극대화 (2-3개월차) ✅
 
-Goal: Evolve from landing page tool to full web presence platform.
+목표: ARPU 증가, 이탈률 감소, 유료 사용자를 위한 고부가 기능 추가.
 
-### 4.1 AI Chat Editor
-- [ ] Natural language editing: "Make the hero section more bold"
-- [ ] "Add a FAQ section about pricing"
-- [ ] "Change the color scheme to dark mode"
-- [ ] Conversation history per project
+### 3.1 공개 API (Team 기능)
+- [x] 페이지 생성 REST API (`/api/v1/generate`)
+- [x] API 키 관리 (생성, 목록, 삭제)
+- [x] SHA-256 해시 기반 키 인증
 
-### 4.2 Multi-page Site Builder
-- [ ] Multiple pages per project (Home, About, Pricing, Contact)
-- [ ] Shared navigation across pages
-- [ ] Site-level settings (favicon, global styles)
-- [ ] Subdirectory routing for published sites
+### 3.2 팀 워크스페이스
+- [x] 팀 생성 / 멤버 초대
+- [x] 역할 기반 권한 (관리자, 편집자, 뷰어)
 
-### 4.3 Third-party Integrations
-- [ ] Shopify (product embeds)
-- [ ] Notion (content sync)
-- [ ] Zapier / Make (workflow automation)
-- [ ] Google Analytics / Tag Manager
-- [ ] Facebook Pixel / TikTok Pixel
+### 3.3 브랜드킷
+- [x] 브랜드 컬러, 폰트, 로고 저장
+- [x] AI가 브랜드킷 참조하여 페이지 생성
+- [x] 톤, 태그라인 설정
 
-### 4.4 Enterprise Plan
-- [ ] SSO (SAML)
-- [ ] Custom contracts and invoicing
-- [ ] Dedicated support
-- [ ] SLA guarantees
-- [ ] White-label option
+### 3.4 전환 분석 대시보드
+- [x] 페이지 뷰 추적 (경량, 프라이버시 친화적)
+- [x] CTA 클릭 추적
+- [x] 방문자 기기/국가별 분석
+- [x] 전환율 추이 (7일/30일/90일)
+- [x] 일별 페이지 뷰 차트
 
 ---
 
-## Success Metrics
+## Phase 4 — 스케일 (3개월 이후) ✅
 
-| Metric | Target (3 months) |
-|--------|--------------------|
-| Registered users | 5,000+ |
-| Monthly active users | 1,500+ |
-| Paid subscribers | 200+ |
+목표: 랜딩페이지 도구에서 풀 웹 프레즌스 플랫폼으로 진화.
+
+### 4.1 AI 채팅 에디터
+- [x] 자연어 편집: "히어로 섹션 더 대담하게"
+- [x] "FAQ 섹션 추가해줘"
+- [x] "다크 모드로 변경"
+- [x] 대화 히스토리 유지
+- [x] 빠른 액션 버튼 (볼드하게, 다크 테마, FAQ 추가, 소셜 프루프)
+
+### 4.2 멀티페이지 사이트 빌더
+- [x] 프로젝트당 여러 페이지 (홈, 소개, 가격, 연락처)
+- [x] 사이트 레벨 설정
+- [x] 페이지 CRUD API
+
+### 4.3 서드파티 연동
+- [x] Google Analytics 4
+- [x] Google Tag Manager
+- [x] Facebook Pixel
+- [x] TikTok Pixel
+- [x] Zapier 웹훅
+- [x] 커스텀 웹훅
+- [x] Mailchimp
+- [x] ConvertKit
+
+---
+
+## 성공 지표
+
+| 지표 | 3개월 목표 |
+|------|-----------|
+| 가입자 수 | 5,000+ |
+| 월 활성 사용자 | 1,500+ |
+| 유료 구독자 | 200+ |
 | MRR | $5,000+ |
-| Pages generated | 10,000+ |
-| Churn rate | < 5% monthly |
+| 생성된 페이지 수 | 10,000+ |
+| 월 이탈률 | < 5% |
 
 ---
 
-## Growth Strategy
+## 성장 전략
 
-1. **Viral Loop**: Free plan badge → organic discovery → new signups
-2. **Content Marketing**: Blog posts about landing page best practices, AI, conversion optimization
-3. **Product Hunt Launch**: Phase 1 completion → PH launch
-4. **SEO**: Target "AI landing page generator", "free landing page builder" keywords
-5. **Indie Hacker / Twitter**: Build in public, share milestones
-6. **Partnerships**: Integration partners, template creators
+1. **바이럴 루프**: Free 플랜 뱃지 → 자연 유입 → 신규 가입
+2. **콘텐츠 마케팅**: 랜딩페이지 모범 사례, AI, 전환 최적화 블로그
+3. **Product Hunt 런칭**: Phase 1 완료 후 PH 런칭
+4. **SEO**: "AI landing page generator", "free landing page builder" 키워드 타겟
+5. **인디 해커 / Twitter**: Build in public, 마일스톤 공유
+6. **파트너십**: 연동 파트너, 템플릿 크리에이터
 
 ---
 
-*Last updated: 2026-03-31*
-*Status: All 4 phases complete — ready for production deployment*
+*마지막 업데이트: 2026-04-03*
+*상태: 4개 페이즈 모두 완료 — 프로덕션 배포 가능*
